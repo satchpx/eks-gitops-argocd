@@ -21,10 +21,40 @@ eksctl completion bash >> ~/.bash_completion
 . ~/.bash_completion
 ```
 
+Create a CMK for the EKS cluster to use when encrypting your Kubernetes secrets:
+```
+aws kms create-alias --alias-name alias/eksworkshop --target-key-id $(aws kms create-key --query KeyMetadata.Arn --output text)
+```
+
+Let’s retrieve the ARN of the CMK to input into the create cluster command.
+```
+export MASTER_ARN=$(aws kms describe-key --key-id alias/eksworkshop --query KeyMetadata.Arn --output text)
+```
+
+We set the MASTER_ARN environment variable to make it easier to refer to the KMS key later.
+
+Now, let’s save the MASTER_ARN environment variable into the bash_profile
+```
+echo "export MASTER_ARN=${MASTER_ARN}" | tee -a ~/.bash_profile
+```
+
+
 Now let's create the cluster
 ```
 eksctl create cluster -f config/cluster.yaml
 ```
+
+Test the cluster
+```
+kubectl get nodes
+# if we see our 3 nodes, we know we have authenticated correctly
+```
+
+Update kubeconfig file to interact with the EKS cluster
+```
+aws eks update-kubeconfig --name eks-gitops --region ${AWS_REGION}
+```
+
 
 ## Setup GitHub Actions
 
