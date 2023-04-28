@@ -55,8 +55,14 @@ Update kubeconfig file to interact with the EKS cluster
 aws eks update-kubeconfig --name eks-gitops --region ${AWS_REGION}
 ```
 
+###
+https://aws.amazon.com/blogs/security/use-iam-roles-to-connect-github-actions-to-actions-in-aws/
 
 ## Setup GitHub Actions
 
 ## Install ArgoCD on EKS
 
+```
+helm repo add argo https://argoproj.github.io/argo-helm
+helm install argocd argo/argo-cd --set server.service.type=LoadBalancer
+```
