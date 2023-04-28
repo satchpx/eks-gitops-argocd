@@ -2,6 +2,9 @@
 
 This repository walks through implementing GitOps with GitHub Actions and ArgoCD to deploy applications via helm to EKS
 
+## High Level Architecture
+![Alt text](images/eks-gitops-argocd.png?raw=true "GitOps on EKS with GitHub Actions and ArgoCD")
+
 ## Build EKS Cluster
 For this demo, we will create the EKS cluster using EKSCTL. Before that, some housekeeping
 ```
@@ -62,6 +65,14 @@ https://aws.amazon.com/blogs/security/use-iam-roles-to-connect-github-actions-to
 
 ## Install ArgoCD on EKS
 
+Install helm
+```
+curl -sSL https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
+helm version --short
+
+```
+
+Install ArgoCD
 ```
 helm repo add argo https://argoproj.github.io/argo-helm
 helm install argocd argo/argo-cd --set server.service.type=LoadBalancer
