@@ -54,9 +54,26 @@ jobs:
     - name: Update Version
       run: |
           git_hash=$(git rev-parse --short "$GITHUB_SHA")
-          version=$(cat ./charts/helm-example/values.yaml | grep version: | awk '{print $2}')
-          sed -i "s/$version/${GITHUB_REF##*/}-$git_hash/" ./charts/helm-example/values.yaml
-          
+          version=$(cat ./charts/eks-gitops-argocd/values.yaml | grep version: | awk '{print $2}')
+          sed -i "s/$version/${GITHUB_REF##*/}-$git_hash/" ./charts/eks-gitops-argocd/values.yaml
+    
+    # Update chart version
+    - name : Update helm chart version
+      run: |
+          VER=`grep version: charts/eks-gitops-argocd/Chart.yaml | cut -d ':' -f2`
+          MAJOR=`echo $VER | cut -d '.' -f1`
+          MINOR=`echo $VER | cut -d '.' -f2`
+          SUBVER=`echo $VER | cut -d '.' -f3`
+          SUBVER="$((${SUBVER//[ $'\001'-$'\037']}+1))"
+          NEW_VER=`echo $MAJOR.$MINOR.$SUBVER`
+          sed -i "s/$VER/$NEW_VER/" charts/eks-gitops-argocd/Chart.yaml
+
+    # Helm package and push
+    - name: Package helm chart 
+      run: |
+          helm package charts/eks-gitops-argocd
+          helm push ${ECR_REPOSITORY}-${NEW_VER}.tgz oci://${ECR_REGISTRY}/
+
     - name: Commit and push changes
       uses: devops-infra/action-commit-push@v0.3
       with:
