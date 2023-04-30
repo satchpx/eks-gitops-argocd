@@ -70,16 +70,17 @@ jobs:
         ECR_REPOSITORY: eks-gitops-argocd
       run: |
           VER=`grep version: charts/eks-gitops-argocd/Chart.yaml | cut -d ':' -f2`
-          MAJOR=`echo $VER | cut -d '.' -f1`
-          MINOR=`echo $VER | cut -d '.' -f2`
-          SUBVER=`echo $VER | cut -d '.' -f3`
-          SUBVER="$((${SUBVER//[ $'\001'-$'\037']}+1))"
-          NEW_VER=`echo $MAJOR.$MINOR.$SUBVER`
-          sed -i "s/$VER/ $NEW_VER/" charts/eks-gitops-argocd/Chart.yaml
-          echo "DEBUG:"
-          cat charts/eks-gitops-argocd/Chart.yaml
+          # MAJOR=`echo $VER | cut -d '.' -f1`
+          # MINOR=`echo $VER | cut -d '.' -f2`
+          # SUBVER=`echo $VER | cut -d '.' -f3`
+          # SUBVER="$((${SUBVER//[ $'\001'-$'\037']}+1))"
+          # NEW_VER=`echo $MAJOR.$MINOR.$SUBVER`
+          # sed -i "s/$VER/ $NEW_VER/" charts/eks-gitops-argocd/Chart.yaml
           helm package charts/eks-gitops-argocd
-          helm push $ECR_REPOSITORY-$NEW_VER.tgz oci://$ECR_REGISTRY/
+          #helm push $ECR_REPOSITORY-$NEW_VER.tgz oci://$ECR_REGISTRY/
+          helm push $ECR_REPOSITORY-$VER.tgz oci://$ECR_REGISTRY/
+
+
 
     # - name: Commit and push changes
     #   uses: devops-infra/action-commit-push@v0.3
