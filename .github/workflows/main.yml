@@ -57,7 +57,7 @@ jobs:
           version=$(cat ./charts/eks-gitops-argocd/values.yaml | grep version: | awk '{print $2}')
           sed -i "s/$version/${GITHUB_REF##*/}-$git_hash/" ./charts/eks-gitops-argocd/values.yaml
     
-    # Update chart version
+    # Update chart version, package, and push
     - name : Update helm chart version
       run: |
           VER=`grep version: charts/eks-gitops-argocd/Chart.yaml | cut -d ':' -f2`
@@ -69,12 +69,8 @@ jobs:
           sed -i "s/$VER/ $NEW_VER/" charts/eks-gitops-argocd/Chart.yaml
           echo "DEBUG:"
           cat charts/eks-gitops-argocd/Chart.yaml
-
-    # Helm package and push
-    - name: Package helm chart 
-      run: |
           helm package charts/eks-gitops-argocd
-          helm push *.tgz oci://${ECR_REGISTRY}/
+          helm push $ECR_REPOSITORY-$NEW_VER.tgz oci://$ECR_REGISTRY/
 
     - name: Commit and push changes
       uses: devops-infra/action-commit-push@v0.3
