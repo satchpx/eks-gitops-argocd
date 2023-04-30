@@ -78,7 +78,7 @@ jobs:
           # sed -i "s/$VER/ $NEW_VER/" charts/eks-gitops-argocd/Chart.yaml
           helm package charts/eks-gitops-argocd
           #helm push $ECR_REPOSITORY-$NEW_VER.tgz oci://$ECR_REGISTRY/
-          helm push $ECR_REPOSITORY-$VER.tgz oci://$ECR_REGISTRY/
+          helm push eks-gitops-argocd-0.1.1.tgz oci://$ECR_REGISTRY/
 
 
 
