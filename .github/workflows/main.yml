@@ -61,7 +61,7 @@ jobs:
           sed -i "s/$version/${GITHUB_REF##*/}-$git_hash/" ./charts/eks-gitops-argocd/values.yaml
           OLD_REPO=`grep 1234567890 ./charts/eks-gitops-argocd/values.yaml | cut -d ':' -f2`
           NEW_REPO="${ECR_REGISTRY}/${ECR_REPOSITORY}"
-          sed -i "s/$OLD_REPO/ $NEW_REPO/" ./charts/eks-gitops-argocd/values.yaml
+          sed -i "s|$OLD_REPO| $NEW_REPO|" ./charts/eks-gitops-argocd/values.yaml
     
     # Update chart version, package, and push
     - name : Update helm chart version
