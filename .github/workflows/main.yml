@@ -59,6 +59,9 @@ jobs:
     
     # Update chart version, package, and push
     - name : Update helm chart version
+      env:
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        ECR_REPOSITORY: eks-gitops-argocd
       run: |
           VER=`grep version: charts/eks-gitops-argocd/Chart.yaml | cut -d ':' -f2`
           MAJOR=`echo $VER | cut -d '.' -f1`
