@@ -66,7 +66,7 @@ jobs:
           SUBVER=`echo $VER | cut -d '.' -f3`
           SUBVER="$((${SUBVER//[ $'\001'-$'\037']}+1))"
           NEW_VER=`echo $MAJOR.$MINOR.$SUBVER`
-          sed -i "s/$VER/$NEW_VER/" charts/eks-gitops-argocd/Chart.yaml
+          sed -i "s/$VER/ $NEW_VER/" charts/eks-gitops-argocd/Chart.yaml
           echo "DEBUG:"
           cat charts/eks-gitops-argocd/Chart.yaml
 
