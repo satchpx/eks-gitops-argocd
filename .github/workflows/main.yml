@@ -52,10 +52,15 @@ jobs:
         echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:${GITHUB_REF##*/}-$git_hash"
         
     - name: Update Version
+      env:
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        ECR_REPOSITORY: eks-gitops-argocd
       run: |
           git_hash=$(git rev-parse --short "$GITHUB_SHA")
           version=$(cat ./charts/eks-gitops-argocd/values.yaml | grep version: | awk '{print $2}')
           sed -i "s/$version/${GITHUB_REF##*/}-$git_hash/" ./charts/eks-gitops-argocd/values.yaml
+          OLD_REPO=`grep 1234567890 ./charts/eks-gitops-argocd/values.yaml cut -d: -f2`
+          sed -i "s/$OLD_REPO/ $ECR_REGISTRY\/$ECR_REPOSITORY/" ./charts/eks-gitops-argocd/values.yaml
     
     # Update chart version, package, and push
     - name : Update helm chart version
@@ -75,8 +80,8 @@ jobs:
           helm package charts/eks-gitops-argocd
           helm push $ECR_REPOSITORY-$NEW_VER.tgz oci://$ECR_REGISTRY/
 
-    - name: Commit and push changes
-      uses: devops-infra/action-commit-push@v0.3
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        commit_message: Version updated
+    # - name: Commit and push changes
+    #   uses: devops-infra/action-commit-push@v0.3
+    #   with:
+    #     github_token: ${{ secrets.GITHUB_TOKEN }}
+    #     commit_message: Version updated

@@ -155,3 +155,19 @@ kubectl get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | 
 ```
 
 Connect to the Repo -> Add/Create an application
+```
+sudo curl --silent --location -o /usr/local/bin/argocd https://github.com/argoproj/argo-cd/releases/download/v2.4.7/argocd-linux-amd64
+
+sudo chmod +x /usr/local/bin/argocd
+
+export ARGOCD_SERVER=`kubectl get svc argocd-server -o json | jq --raw-output '.status.loadBalancer.ingress[0].hostname'`
+
+export ARGO_PWD=`kubectl get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d`
+
+argocd login $ARGOCD_SERVER --username admin --password $ARGO_PWD --insecure
+```
+
+Add ECR helm repo
+```
+argocd repo add XXXXXXXXXX.dkr.ecr.us-east-1.amazonaws.com --type helm --name eks-gitops-argocd --enable-oci --username AWS --password $(aws ecr get-login-password --region us-west-2)
+```
