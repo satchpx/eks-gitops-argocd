@@ -25,7 +25,7 @@ jobs:
     - name: configure aws credentials
       uses: aws-actions/configure-aws-credentials@v1.7.0
       with:
-        role-to-assume: arn:aws:iam::<AWS_ACCOUNT_ID>:role/<IAM_ROLE_NAME>
+        role-to-assume: arn:aws:iam::128194085353:role/githubActionsRole2
         role-session-name: GitHub_to_AWS_via_FederatedOIDC
         aws-region: ${{ env.AWS_REGION }}
     # Hello from AWS: WhoAmI
@@ -63,6 +63,19 @@ jobs:
           NEW_REPO="${ECR_REGISTRY}/${ECR_REPOSITORY}"
           sed -i "s|$OLD_REPO| $NEW_REPO|" ./charts/eks-gitops-argocd/values.yaml
     
+    - name: Login to Jira
+      uses: atlassian/gajira-login@master
+      env:
+        JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
+        JIRA_USER_EMAIL: ${{ secrets.JIRA_USER_EMAIL }}
+        JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
+
+    - name: Comment on issue
+      uses: atlassian/gajira-comment@v3
+      with:
+        issue: DEMO-4
+        comment: "testing eks-gitops-argocd"
+      
     # Update chart version, package, and push
     - name : Update helm chart version
       env:
@@ -70,6 +83,20 @@ jobs:
         ECR_REPOSITORY: eks-gitops-argocd
       run: |
           VER=`grep version: charts/eks-gitops-argocd/Chart.yaml | cut -d ':' -f2`
+          # MAJOR=`echo $VER | cut -d '.' -f1`
+          # MINOR=`echo $VER | cut -d '.' -f2`
+          # SUBVER=`echo $VER | cut -d '.' -f3`
+          # SUBVER="$((${SUBVER//[ $'\001'-$'\037']}+1))"
+          # NEW_VER=`echo $MAJOR.$MINOR.$SUBVER`
+          # sed -i "s/$VER/ $NEW_VER/" charts/eks-gitops-argocd/Chart.yaml
           helm package charts/eks-gitops-argocd
+          #helm push $ECR_REPOSITORY-$NEW_VER.tgz oci://$ECR_REGISTRY/
           helm push eks-gitops-argocd-0.1.1.tgz oci://$ECR_REGISTRY/
 
+
+
+    # - name: Commit and push changes
+    #   uses: devops-infra/action-commit-push@v0.3
+    #   with:
+    #     github_token: ${{ secrets.GITHUB_TOKEN }}
+    #     commit_message: Version updated
