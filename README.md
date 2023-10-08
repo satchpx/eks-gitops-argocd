@@ -151,7 +151,7 @@ helm install argocd argo/argo-cd --set server.service.type=LoadBalancer
 
 Access the UI which is sitting behing an ELB. To get the password:
 ```
-kubectl get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d` && echo
+kubectl get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d && echo
 ```
 
 Connect to the Repo -> Add/Create an application
@@ -169,5 +169,5 @@ argocd login $ARGOCD_SERVER --username admin --password $ARGO_PWD --insecure
 
 Add ECR helm repo
 ```
-argocd repo add XXXXXXXXXX.dkr.ecr.us-east-1.amazonaws.com --type helm --name eks-gitops-argocd --enable-oci --username AWS --password $(aws ecr get-login-password --region us-west-2)
+argocd repo add XXXXXXXXXX.dkr.ecr.us-west-2.amazonaws.com --type helm --name eks-gitops-argocd --enable-oci --username AWS --password $(aws ecr get-login-password --region us-west-2)
 ```
