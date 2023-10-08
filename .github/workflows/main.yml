@@ -22,12 +22,13 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
 
-    - name: configure aws credentials
-      uses: aws-actions/configure-aws-credentials@v1.7.0
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
       with:
-        role-to-assume: arn:aws:iam::<AWS_ACCOUNT_ID>:role/<IAM_ROLE_NAME>
-        role-session-name: GitHub_to_AWS_via_FederatedOIDC
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: ${{ env.AWS_REGION }}
+        
     # Hello from AWS: WhoAmI
     - name: Sts GetCallerIdentity
       run: |
