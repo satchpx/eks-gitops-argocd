@@ -9,9 +9,11 @@ This repository walks through implementing GitOps with GitHub Actions and ArgoCD
 For this demo, we will create the EKS cluster using EKSCTL. Before that, some housekeeping
 ```
 export ACCOUNT_ID=$(aws sts get-caller-identity --output text --query Account)
-export AWS_REGION=$(curl -s 169.254.169.254/latest/dynamic/instance-identity/document | jq -r '.region')
-export AZS=($(aws ec2 describe-availability-zones --query 'AvailabilityZones[].ZoneName' --output text --region $AWS_REGION))
-export K8S_VERSION=1.23
+export AWS_REGION=$(aws ec2 describe-availability-zones --query 'AvailabilityZones[0].[RegionName]' --output text)
+export AZ1=$(aws ec2 describe-availability-zones --query 'AvailabilityZones[0].ZoneName' --region $AWS_REGION --output text)
+export AZ2=$(aws ec2 describe-availability-zones --query 'AvailabilityZones[1].ZoneName' --region $AWS_REGION --output text)
+export AZ3=$(aws ec2 describe-availability-zones --query 'AvailabilityZones[2].ZoneName' --region $AWS_REGION --output text)
+export K8S_VERSION=1.25
 ```
 
 If you do not have eksctl installed, install it.
@@ -31,14 +33,14 @@ aws kms create-alias --alias-name alias/eksworkshop --target-key-id $(aws kms cr
 
 Let’s retrieve the ARN of the CMK to input into the create cluster command.
 ```
-export MASTER_ARN=$(aws kms describe-key --key-id alias/eksworkshop --query KeyMetadata.Arn --output text)
+export KEY_ARN=$(aws kms describe-key --key-id alias/eksworkshop --query KeyMetadata.Arn --output text)
 ```
 
-We set the MASTER_ARN environment variable to make it easier to refer to the KMS key later.
+We set the KEY_ARN environment variable to make it easier to refer to the KMS key later.
 
-Now, let’s save the MASTER_ARN environment variable into the bash_profile
+Now, let’s save the KEY_ARN environment variable into the bash_profile
 ```
-echo "export MASTER_ARN=${MASTER_ARN}" | tee -a ~/.bash_profile
+echo "export KEY_ARN=${KEY_ARN}" | tee -a ~/.bash_profile
 ```
 
 

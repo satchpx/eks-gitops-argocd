@@ -4,9 +4,9 @@ kind: ClusterConfig
 metadata:
   name: eks-gitops
   region: ${AWS_REGION}
-  version: ${K8S_VERSION}
+  version: "${K8S_VERSION}"
 
-availabilityZones: ["${AZS[0]}", "${AZS[1]}", "${AZS[2]}"]
+availabilityZones: ["${AZ1}", "${AZ2}", "${AZ3}"]
 
 managedNodeGroups:
 - name: nodegroup
@@ -19,6 +19,5 @@ managedNodeGroups:
 # cloudWatch:
 #  clusterLogging:
 #    enableTypes: ["*"]
-
 secretsEncryption:
-  keyARN: ${MASTER_ARN}
+  keyARN: ${KEY_ARN}
