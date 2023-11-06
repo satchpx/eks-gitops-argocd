@@ -5,10 +5,10 @@ name: CI
 on:
   push:
     branches: [ main ]
-  pull_request:
-    branches: [ main ]
+    paths:
+      - '**Chart.yaml'
 env:
-  AWS_REGION : "us-west-2" 
+  AWS_REGION : <AWS_REGION> 
 # Permission can be added at job level or workflow level    
 permissions:
       id-token: write   # This is required for requesting the JWT
@@ -70,7 +70,7 @@ jobs:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         ECR_REPOSITORY: eks-gitops-argocd
       run: |
-          VER=`grep version: charts/eks-gitops-argocd/Chart.yaml | cut -d ':' -f2`
+          VER=`grep version: ./charts/eks-gitops-argocd/Chart.yaml | cut -d ':' -f2 | tr -d '\n\t\r '`
           helm package charts/eks-gitops-argocd
-          helm push eks-gitops-argocd-0.1.1.tgz oci://$ECR_REGISTRY/
+          helm push eks-gitops-argocd-${VER}.tgz oci://$ECR_REGISTRY/
 
