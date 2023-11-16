@@ -20,7 +20,7 @@
                 "ecr:PutImage",
                 "ecr:UploadLayerPart"
             ],
-            "Resource": "arn:aws:ecr:us-east-1:152840352090:repository/eks-gitops-argocd"
+            "Resource": "arn:aws:ecr:${AWS_REGION}:${ACCOUNT_ID}:repository/eks-gitops-argocd"
         }
     ]
 }
