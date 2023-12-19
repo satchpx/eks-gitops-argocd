@@ -5,8 +5,6 @@ name: CI
 on:
   push:
     branches: [ main ]
-    paths:
-      - '**Chart.yaml'
 env:
   AWS_REGION : <AWS_REGION> 
 # Permission can be added at job level or workflow level    
