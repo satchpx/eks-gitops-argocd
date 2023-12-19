@@ -6,6 +6,7 @@ on:
   push:
     branches: [ main ]
 env:
+  # Update the line below to reflect your appropriate AWS_REGION
   AWS_REGION : "us-west-2"
 # Permission can be added at job level or workflow level    
 permissions:
